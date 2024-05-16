@@ -1,4 +1,3 @@
-
 from dill import load
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -6,9 +5,8 @@ import pandas as pd
 import numpy as np
 import pickle
 
-
-with open("C:\\Users\\vdmel\\Salary\\model.pkl") as f:
-    reloaded_model = pickle.load(model)
+with open("model.pkl", "rb") as f:  # Open the file in binary mode
+    reloaded_model = pickle.load(f)
 
 app = FastAPI()
 
@@ -24,7 +22,7 @@ class Payload(BaseModel):
 
 @app.post("/")
 def predict(payload: Payload):
-    df = pd.DataFrame([payload.model_dump().values()], columns=payload.model_dump().keys())
+    df = pd.DataFrame([payload.dict()])  # Corrected 'model_dump()' to 'dict()'
     print(df)
     y_pred = reloaded_model.predict(df)
     response = {
